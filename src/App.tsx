@@ -183,7 +183,7 @@ function App() {
     // Portfolio section animation
     if (portfolioSectionRef.current) {
       gsap.to(portfolioSectionRef.current, {
-        y: -500,
+        y: -900,
         scrollTrigger: {
           trigger: portfolioSectionRef.current,
           start: "top bottom",
