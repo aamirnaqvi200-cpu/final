@@ -173,7 +173,7 @@ function App() {
         scaleY: 3,
         scrollTrigger: {
           trigger: heroRef.current,
-          start: "top bottom",
+          start: "top center",
           end: "bottom center",
           scrub: 1,
         }
