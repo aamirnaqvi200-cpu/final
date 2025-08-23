@@ -168,7 +168,7 @@ function App() {
 
   // Background text animation
 gsap.to(backgroundTextRef.current, {
-  y: -200,
+  y: -300,
   scaleY: 2,
   transformOrigin: "top center",
   scrollTrigger: {
