@@ -170,7 +170,6 @@ function App() {
     if (backgroundTextRef.current) {
       gsap.to(backgroundTextRef.current, {
         y: -200,
-        opacity: 1,
         scaleY: 3,
         scrollTrigger: {
           trigger: heroRef.current,
