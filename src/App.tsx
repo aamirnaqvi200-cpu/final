@@ -374,7 +374,7 @@ function App() {
           }}
         >
           <div  
-            className="text-[4rem] md:text-[10rem] lg:text-[20rem] font-bosenAlt text-black/50 select-none leading-none opacity-0 animate-fade-in-delayed"
+            className="text-[4rem] md:text-[10rem] lg:text-[20rem] font-bosenAlt text-yellow select-none leading-none opacity-0 animate-fade-in-delayed"
             style={{
               animationDelay: '0.1s',  
               animationFillMode: 'forwards', 
