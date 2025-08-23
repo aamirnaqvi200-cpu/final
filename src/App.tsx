@@ -10,6 +10,8 @@ import { useThrottledMouseTracking } from './hooks/useThrottledMouseTracking';
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
+// Check if device is mobile
+const isMobile = () => window.innerWidth < 768;
 interface TestimonialBadge {
   image: string;
   position: { top: string; left: string };
@@ -50,14 +52,16 @@ export function TestimonialBadgesGroup() {
 }
 
 function TestimonialBadge({ badge }: { badge: TestimonialBadge }) {
+  const mobile = isMobile();
+  
   return (
     <div
-      className="absolute opacity-0 animate-fade-up"
+      className={`absolute ${mobile ? 'opacity-10' : 'opacity-0 animate-fade-up'}`}
       style={{
         top: badge.position.top,
         left: badge.position.left,
-        animationDelay: `${badge.delay}s`,
-        animationFillMode: "forwards",
+        animationDelay: mobile ? undefined : `${badge.delay}s`,
+        animationFillMode: mobile ? undefined : "forwards",
         transform: `scale(${badge.scale})`,
       }}
     >
@@ -69,22 +73,24 @@ function TestimonialBadge({ badge }: { badge: TestimonialBadge }) {
           className="w-full h-auto block relative z-10 opacity-10 hover:opacity-50 transition-opacity duration-300"
         />
 
-        {/* Shine Overlay */}
-        <div
-          className="absolute inset-0 z-20 pointer-events-none animate-shine-diagonal"
-          style={{
-            WebkitMaskImage: `url(${badge.image})`,
-            maskImage: `url(${badge.image})`,
-            WebkitMaskSize: 'contain',
-            maskSize: 'contain',
-            WebkitMaskRepeat: 'no-repeat',
-            maskRepeat: 'no-repeat',
-            animationDelay: `${badge.shineDelay}s`,
-            animationDuration: `${badge.shineDuration}s`,
-            '--shine-delay': `${badge.shineDelay}s`,
-            '--shine-duration': `${badge.shineDuration}s`,
-          } as React.CSSProperties}
-        />
+        {/* Shine Overlay - Only on desktop */}
+        {!mobile && (
+          <div
+            className="absolute inset-0 z-20 pointer-events-none animate-shine-diagonal"
+            style={{
+              WebkitMaskImage: `url(${badge.image})`,
+              maskImage: `url(${badge.image})`,
+              WebkitMaskSize: 'contain',
+              maskSize: 'contain',
+              WebkitMaskRepeat: 'no-repeat',
+              maskRepeat: 'no-repeat',
+              animationDelay: `${badge.shineDelay}s`,
+              animationDuration: `${badge.shineDuration}s`,
+              '--shine-delay': `${badge.shineDelay}s`,
+              '--shine-duration': `${badge.shineDuration}s`,
+            } as React.CSSProperties}
+          />
+        )}
 
       </div>
     </div>
@@ -112,7 +118,7 @@ function App() {
   const portfolioRef = useRef<HTMLDivElement>(null);
 
   // Use throttled mouse tracking hook
-  const { mousePosition, handleMouseEnter, handleMouseLeave } = useThrottledMouseTracking();
+  const { mousePosition, handleMouseEnter, handleMouseLeave } = useThrottledMouseTracking(!isMobile());
 
   // Handle splash screen completion
   const handleLoadComplete = () => {
@@ -120,6 +126,11 @@ function App() {
   };
 
   useEffect(() => {
+    // Skip complex animations on mobile
+    if (isMobile()) {
+      return;
+    }
+    
     ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     gsap.registerPlugin(ScrollTrigger);
 
@@ -339,7 +350,7 @@ gsap.to(backgroundTextRef.current, {
           left: "1%",
           opacity: showeyes ? 1 : 0,
           pointerEvents: showeyes ? "auto" : "none",
-          transform: `translate(${mousePosition.x * 8}px, ${mousePosition.y * 8}px)`,
+          transform: isMobile() ? 'none' : `translate(${mousePosition.x * 8}px, ${mousePosition.y * 8}px)`,
         }}
       >
         <div className="relative">
@@ -369,14 +380,14 @@ gsap.to(backgroundTextRef.current, {
           className="absolute inset-0 flex items-center justify-center pointer-events-none z-10"
           style={{ 
             top: '65%',
-            transition: 'transform 0.4s ease-out'
+            transition: isMobile() ? 'none' : 'transform 0.4s ease-out'
           }}
         >
           <div  
-            className="text-[4rem] md:text-[10rem] lg:text-[20rem] font-bosenAlt text-white select-none leading-none opacity-0 animate-fade-in-delayed"
+            className={`text-[4rem] md:text-[10rem] lg:text-[20rem] font-bosenAlt text-white select-none leading-none ${isMobile() ? 'opacity-100' : 'opacity-0 animate-fade-in-delayed'}`}
             style={{
-              animationDelay: '0.1s',  
-              animationFillMode: 'forwards', 
+              animationDelay: isMobile() ? undefined : '0.1s',  
+              animationFillMode: isMobile() ? undefined : 'forwards', 
               textShadow: '0 10px 20px rgba(0,0,0,0.2)'
             }}
           >
@@ -392,30 +403,30 @@ gsap.to(backgroundTextRef.current, {
         >
           <div className="text-center z-10 px-6">
             <div 
-              className="text-2xl md:text-4xl lg:text-5xl font-bosenAlt tracking-tight text-white/70 leading-tight opacity-0 animate-fade-in-delayed"
+              className={`text-2xl md:text-4xl lg:text-5xl font-bosenAlt tracking-tight text-white/70 leading-tight ${isMobile() ? 'opacity-100' : 'opacity-0 animate-fade-in-delayed'}`}
               style={{ 
-                animationDelay: '0.8s', 
-                animationFillMode: 'forwards',
+                animationDelay: isMobile() ? undefined : '0.8s', 
+                animationFillMode: isMobile() ? undefined : 'forwards',
                 textShadow: '0 15px 30px rgba(0,0,0,0.5)'
               }}
             >
               I EDIT
             </div>
             <div 
-              className="text-2xl md:text-3xl lg:text-4xl font-bosenAlt tracking-tight text-white/60 leading-tight mt-2 opacity-0 animate-fade-in-delayed"
+              className={`text-2xl md:text-3xl lg:text-4xl font-bosenAlt tracking-tight text-white/60 leading-tight mt-2 ${isMobile() ? 'opacity-100' : 'opacity-0 animate-fade-in-delayed'}`}
               style={{ 
-                animationDelay: '1.1s', 
-                animationFillMode: 'forwards',
+                animationDelay: isMobile() ? undefined : '1.1s', 
+                animationFillMode: isMobile() ? undefined : 'forwards',
                 textShadow: '0 15px 30px rgba(0,0,0,0.5)'
               }}
             >
               VISUALS THAT
             </div>
             <div 
-              className="text-2xl md:text-4xl lg:text-5xl font-bosenAlt tracking-tight text-white/90 leading-tight mt-2 opacity-0 animate-fade-in-delayed"
+              className={`text-2xl md:text-4xl lg:text-5xl font-bosenAlt tracking-tight text-white/90 leading-tight mt-2 ${isMobile() ? 'opacity-100' : 'opacity-0 animate-fade-in-delayed'}`}
               style={{ 
-                animationDelay: '1.4s', 
-                animationFillMode: 'forwards',
+                animationDelay: isMobile() ? undefined : '1.4s', 
+                animationFillMode: isMobile() ? undefined : 'forwards',
                 textShadow: '0 15px 30px rgba(0,0,0,0.5)'
               }}
             >
@@ -437,25 +448,25 @@ gsap.to(backgroundTextRef.current, {
         {/* Bottom Triangle Shape */}
         <div 
           ref={triangleRef}
-          className="absolute bottom-4 
+          className={`absolute bottom-4 
              left-[48%] max-sm:left-[40%] 
              transform -translate-x-1/2 
-             opacity-0 animate-fade-in-delayed 
-             z-40 cursor-pointer"
+             ${isMobile() ? 'opacity-100' : 'opacity-0 animate-fade-in-delayed'} 
+             z-40 cursor-pointer`}
           onClick={() => {
             document.getElementById('contact-section')?.scrollIntoView({ 
               behavior: 'smooth' 
             });
           }}
           style={{ 
-            animationDelay: '3.5s', 
-            animationFillMode: 'forwards',
+            animationDelay: isMobile() ? undefined : '3.5s', 
+            animationFillMode: isMobile() ? undefined : 'forwards',
             filter: 'drop-shadow(0 10px 20px rgba(34, 211, 238, 0.3))'
           }}
         >
           <div className="flex flex-col items-center">
             <div 
-              className="w-0 h-0 border-l-[12px] border-r-[12px] border-t-[20px] border-l-transparent border-r-transparent border-t-cyan-400 animate-bounce-triangle"
+              className={`w-0 h-0 border-l-[12px] border-r-[12px] border-t-[20px] border-l-transparent border-r-transparent border-t-cyan-400 ${isMobile() ? '' : 'animate-bounce-triangle'}`}
             />
             <p className="text-white/60 text-xs font-bosenAlt mt-2 uppercase tracking-wide">
               Scroll Down
@@ -561,10 +572,10 @@ gsap.to(backgroundTextRef.current, {
       {showContact && (
         <div
           id="contact-section"
-          className="fixed bottom-0 left-0 right-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center z-30 bg-transparent opacity-0 animate-fade-in-delayed"
+          className={`fixed bottom-0 left-0 right-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center z-30 bg-transparent ${isMobile() ? 'opacity-100' : 'opacity-0 animate-fade-in-delayed'}`}
           style={{
-            animationDelay: '0.2s', 
-            animationFillMode: 'forwards'
+            animationDelay: isMobile() ? undefined : '0.2s', 
+            animationFillMode: isMobile() ? undefined : 'forwards'
           }}
         > 
          {/* Main Heading */}

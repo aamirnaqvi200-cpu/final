@@ -18,6 +18,17 @@
     animation: fade-in-delayed 1.2s ease-out;
   }
 
+  /* Disable animations on mobile */
+  @media (max-width: 767px) {
+    .animate-fade-in-delayed,
+    .animate-bounce-triangle,
+    .animate-shine-diagonal,
+    .animate-fade-up,
+    .animate-badge-float {
+      animation: none !important;
+    }
+  }
+
   @keyframes shine {
     0% {
       background-position: -200% 0;

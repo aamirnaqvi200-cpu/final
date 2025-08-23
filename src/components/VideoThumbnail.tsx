@@ -1,6 +1,8 @@
 import React, { useRef, useState } from "react";
 import { Maximize2, X } from "lucide-react";
 
+// Check if device is mobile
+const isMobile = () => window.innerWidth < 768;
 interface VideoThumbnailProps {
   src: string;
   title: string;
@@ -45,7 +47,7 @@ export function VideoThumbnail({
 
   return (
     <div
-      className={`relative group cursor-pointer ${aspectClasses} rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 ${className}`}
+      className={`relative group cursor-pointer ${aspectClasses} rounded-xl overflow-hidden shadow-lg transition-all duration-300 ${isMobile() ? '' : 'hover:shadow-xl hover:scale-105'} ${className}`}
       onClick={handleClick}
     >
       {/* Video with thumbnail poster */}
@@ -60,7 +62,7 @@ export function VideoThumbnail({
       {!isPlaying && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/30">
           <div className="bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm w-16 h-16">
-            <div className="w-0 h-0 border-l-[20px] border-t-[12px] border-b-[12px] border-l-white border-t-transparent border-b-transparent ml-1 animate-bounce-triangle"></div>
+            <div className={`w-0 h-0 border-l-[20px] border-t-[12px] border-b-[12px] border-l-white border-t-transparent border-b-transparent ml-1 ${isMobile() ? '' : 'animate-bounce-triangle'}`}></div>
           </div>
         </div>
       )}
