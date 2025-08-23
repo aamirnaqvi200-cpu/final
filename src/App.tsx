@@ -174,7 +174,7 @@ function App() {
         scrollTrigger: {
           trigger: heroRef.current,
           start: "top centre",
-          end: "top bottom",
+          end: "bottom bottom",
           scrub: 1,
         }
       }); 
