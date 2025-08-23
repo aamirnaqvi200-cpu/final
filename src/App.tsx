@@ -166,19 +166,26 @@ function App() {
       });
     }
 
-    // Background text animation
-    if (backgroundTextRef.current) {
-      gsap.to(backgroundTextRef.current, {
-        y: -100,
-        scaleY: 3,
-        scrollTrigger: {
-          trigger: heroRef.current,
-          start: "center center",
-          end: "bottom center",
-          scrub: 1,
-        }
-      });  
+  // Background text animation
+if (backgroundTextRef.current) {
+  gsap.fromTo(
+    backgroundTextRef.current,
+    { y: 0, scaleY: 1 }, // initial state
+    {
+      y: -100,
+      scaleY: 3,
+      scrollTrigger: {
+        trigger: heroRef.current,
+        start: "center center",
+        end: "bottom center",
+        scrub: 1,
+        toggleActions: "play none none reverse", 
+        // ↑ only plays when enters viewport
+      }
     }
+  );
+}
+
 
     // Portfolio section animation
     if (portfolioSectionRef.current) {
