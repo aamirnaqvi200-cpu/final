@@ -169,7 +169,7 @@ function App() {
     // Background text animation
     if (backgroundTextRef.current) {
       gsap.to(backgroundTextRef.current, {
-        y: -200,
+        y: -500,
         scaleY: 3,
         scrollTrigger: {
           trigger: heroRef.current,
