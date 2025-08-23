@@ -134,13 +134,13 @@ function App() {
       }
     });
 
-  // Batch hero elements animation
-const heroElements = [portraitRef.current, baseRef.current, eyesRef.current];
-heroElements.forEach(element => {
-  if (element) {
-    heroTl.to(element, { y: 50, duration: 1.5, ease: "power2.out" }, 0);
-  }
-});
+    // Batch hero elements animation
+    const heroElements = [portraitRef.current, baseRef.current, eyesRef.current];
+    heroElements.forEach(element => {
+      if (element) {
+        heroTl.to(element, { y: 50 }, 0);
+      }
+    }); 
 
     // Main text animation
     gsap.to(mainTextRef.current, {
