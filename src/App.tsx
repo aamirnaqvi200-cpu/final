@@ -169,7 +169,7 @@ function App() {
     // Background text animation
     if (backgroundTextRef.current) {
       gsap.to(backgroundTextRef.current, {
-        y: 100,
+        y: -200,
         scaleY: 3,
         scrollTrigger: {
           trigger: heroRef.current,
@@ -177,7 +177,7 @@ function App() {
           end: "bottom+=-50 top",
           scrub: 1,
         }
-      });
+      }); 
     }
 
     // Portfolio section animation
