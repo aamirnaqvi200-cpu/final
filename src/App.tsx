@@ -173,7 +173,7 @@ if (backgroundTextRef.current) {
     { y: 0, scaleY: 1 }, // initial state
     {
       y: -100,
-      scaleY: 3,
+      scaleY: 2,
       scrollTrigger: {
         trigger: heroRef.current,
         start: "center center",
