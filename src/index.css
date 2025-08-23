@@ -218,3 +218,6 @@ body {
 .animate-badge-float {
   animation: badge-float 6s ease-in-out infinite;
 }
+.background-text {
+  will-change: transform;
+}
