@@ -167,8 +167,7 @@ function App() {
     }
 
   // Background text animation
-if (backgroundTextRef.current) {
- gsap.to(backgroundTextRef.current, {
+gsap.to(backgroundTextRef.current, {
   y: -200,
   scaleY: 2,
   transformOrigin: "top center",
