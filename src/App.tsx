@@ -174,10 +174,10 @@ function App() {
         scrollTrigger: {
           trigger: heroRef.current,
           start: "center center",
-          end: "center center",
+          end: "bottom center",
           scrub: 1,
         }
-      }); 
+      });  
     }
 
     // Portfolio section animation
