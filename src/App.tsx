@@ -138,7 +138,7 @@ function App() {
     const heroElements = [portraitRef.current, baseRef.current, eyesRef.current];
     heroElements.forEach(element => {
       if (element) {
-        heroTl.to(element, { y: 80 }, 0);
+        heroTl.to(element, { y: 10 }, 0);
       }
     });
 
