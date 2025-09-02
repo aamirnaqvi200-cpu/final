@@ -513,6 +513,7 @@ gsap.to(backgroundTextRef.current, {
                 title="SHOW REEL"
                 isShowreel={true}
                 videoIndex={0}
+                loadDelay={0}
               />
             </div>
           </div>
@@ -540,6 +541,7 @@ gsap.to(backgroundTextRef.current, {
         title={`PROJECT ${String(i + 1).padStart(2, "0")}`}
         isShowreel={false}
         videoIndex={i + 1}
+        loadDelay={500 + (i * 300)}
       />
     ))}
   </div>
@@ -571,6 +573,7 @@ gsap.to(backgroundTextRef.current, {
         title={`SOCIAL ${String(i + 1).padStart(2, "0")}`}
         aspectRatio="vertical"
         videoIndex={i + 10}
+        loadDelay={3200 + (i * 200)}
       />
     ))}
   </div> 
