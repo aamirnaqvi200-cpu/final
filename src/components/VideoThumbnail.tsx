@@ -12,6 +12,7 @@ interface VideoThumbnailProps {
   className?: string;
   isShowreel?: boolean;
   videoIndex?: number;
+  loadDelay?: number;
 }
 
 export function VideoThumbnail({
@@ -21,6 +22,7 @@ export function VideoThumbnail({
   className = "",
   isShowreel = false,
   videoIndex = -1,
+  loadDelay = 0,
 }: VideoThumbnailProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -30,14 +32,26 @@ export function VideoThumbnail({
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(false);
   
   const { currentVideoIndex, isSequenceActive, nextVideo } = useVideoSequence();
   const shouldAutoPlay = isSequenceActive && currentVideoIndex === videoIndex;
 
   const aspectClasses = aspectRatio === "vertical" ? "aspect-[9/16]" : "aspect-video";
 
+  // Progressive loading with delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShouldLoad(true);
+    }, loadDelay);
+
+    return () => clearTimeout(timer);
+  }, [loadDelay]);
+
   // Intersection Observer for lazy loading
   useEffect(() => {
+    if (!shouldLoad) return;
+    
     const container = containerRef.current;
     if (!container) return;
 
@@ -57,16 +71,16 @@ export function VideoThumbnail({
     observer.observe(container);
 
     return () => observer.disconnect();
-  }, []);
+  }, [shouldLoad]);
 
   // Load video when in view but don't autoplay
   useEffect(() => {
-    if (isInView && videoRef.current && !videoLoaded) {
+    if (isInView && videoRef.current && !videoLoaded && shouldLoad) {
       const video = videoRef.current;
       video.src = src;
       video.load();
     }
-  }, [isInView, src, videoLoaded]);
+  }, [isInView, src, videoLoaded, shouldLoad]);
 
   // Auto-play when it's this video's turn in the sequence
   useEffect(() => {
@@ -151,7 +165,7 @@ export function VideoThumbnail({
       onClick={handleClick}
     >
       {/* Single video element that handles both preview and playback */}
-      {isInView && (
+      {isInView && shouldLoad && (
         <video 
           ref={videoRef}
           className={`absolute inset-0 w-full h-full ${
@@ -193,11 +207,17 @@ export function VideoThumbnail({
       )}
 
       {/* Fallback background when video is loading */}
-      {!videoLoaded && (
+      {(!videoLoaded || !shouldLoad) && (
         <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
           <div className="text-white/40 text-center">
-            <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin mx-auto mb-2" />
-            <p className="text-xs font-bosenAlt">LOADING</p>
+            {shouldLoad ? (
+              <>
+                <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin mx-auto mb-2" />
+                <p className="text-xs font-bosenAlt">LOADING</p>
+              </>
+            ) : (
+              <div className="w-8 h-8 bg-white/10 rounded-full mx-auto mb-2 animate-pulse" />
+            )}
           </div>
         </div>
       )}
