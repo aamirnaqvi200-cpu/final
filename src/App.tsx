@@ -7,6 +7,9 @@ import { SplashScreen } from './components/SplashScreen';
 import { LazyVideo } from './components/LazyVideo';
 import { useThrottledMouseTracking } from './hooks/useThrottledMouseTracking';
 import { MobileBadgeCarousel } from './components/MobileBadgeCarousel';
+import { VideoSequenceProvider } from './components/VideoSequenceManager';
+import { SequenceControls } from './components/SequenceControls';
+import { TOTAL_VIDEOS } from './components/VideoThumbnail';
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -246,6 +249,7 @@ gsap.to(backgroundTextRef.current, {
   return ( 
     <div className="relative">
      
+      <VideoSequenceProvider totalVideos={TOTAL_VIDEOS}>
       {/* Cinematic Effects Overlay */}
       <div className="vignette-effect" />
       <div className="edge-blur" />
@@ -253,6 +257,9 @@ gsap.to(backgroundTextRef.current, {
        
       {/* Splash Screen */}
       {isLoading && <SplashScreen onLoadComplete={handleLoadComplete} />}
+
+      {/* Sequence Controls */}
+      {!isLoading && <SequenceControls />}
 
       {/* Mobile Badge Carousel - Only visible on mobile */}
       <MobileBadgeCarousel />
@@ -505,6 +512,7 @@ gsap.to(backgroundTextRef.current, {
                 src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
                 title="SHOW REEL"
                 isShowreel={true}
+                videoIndex={0}
               />
             </div>
           </div>
@@ -531,6 +539,7 @@ gsap.to(backgroundTextRef.current, {
         src={url}
         title={`PROJECT ${String(i + 1).padStart(2, "0")}`}
         isShowreel={false}
+        videoIndex={i + 1}
       />
     ))}
   </div>
@@ -561,6 +570,7 @@ gsap.to(backgroundTextRef.current, {
         src={url}
         title={`SOCIAL ${String(i + 1).padStart(2, "0")}`}
         aspectRatio="vertical"
+        videoIndex={i + 10}
       />
     ))}
   </div> 
@@ -640,6 +650,7 @@ gsap.to(backgroundTextRef.current, {
           </div>
         </div>
       )}
+      </VideoSequenceProvider>
     </div>
   );
 }

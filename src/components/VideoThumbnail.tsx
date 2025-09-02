@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Maximize2, X, Play, Pause } from "lucide-react";
+import { useVideoSequence } from './VideoSequenceManager';
 
 // Check if device is mobile
 const isMobile = () => window.innerWidth < 768;
@@ -10,6 +11,7 @@ interface VideoThumbnailProps {
   aspectRatio?: "video" | "vertical";
   className?: string;
   isShowreel?: boolean;
+  videoIndex?: number;
 }
 
 export function VideoThumbnail({
@@ -18,6 +20,7 @@ export function VideoThumbnail({
   aspectRatio = "video",
   className = "",
   isShowreel = false,
+  videoIndex = -1,
 }: VideoThumbnailProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -27,6 +30,9 @@ export function VideoThumbnail({
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
+  
+  const { currentVideoIndex, isSequenceActive, nextVideo } = useVideoSequence();
+  const shouldAutoPlay = isSequenceActive && currentVideoIndex === videoIndex;
 
   const aspectClasses = aspectRatio === "vertical" ? "aspect-[9/16]" : "aspect-video";
 
@@ -61,6 +67,35 @@ export function VideoThumbnail({
       video.load();
     }
   }, [isInView, src, videoLoaded]);
+
+  // Auto-play when it's this video's turn in the sequence
+  useEffect(() => {
+    if (shouldAutoPlay && videoRef.current && videoLoaded && !isPlaying) {
+      const playVideo = async () => {
+        try {
+          setIsLoading(true);
+          await videoRef.current!.play();
+          setIsPlaying(true);
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error auto-playing video:', error);
+          setIsLoading(false);
+          // Move to next video if this one fails
+          setTimeout(nextVideo, 1000);
+        }
+      };
+      playVideo();
+    }
+  }, [shouldAutoPlay, videoLoaded, isPlaying, nextVideo]);
+
+  // Handle video end during sequence
+  const handleVideoEnd = () => {
+    setIsPlaying(false);
+    if (isSequenceActive && currentVideoIndex === videoIndex) {
+      // Wait a moment before moving to next video
+      setTimeout(nextVideo, 500);
+    }
+  };
 
   const handleClick = async () => {
     if (!videoRef.current) return;
@@ -137,12 +172,22 @@ export function VideoThumbnail({
             setIsLoading(false);
           }}
           onPause={() => setIsPlaying(false)}
-          onEnded={() => setIsPlaying(false)}
+          onEnded={handleVideoEnd}
           onLoadStart={() => setIsLoading(true)}
           onCanPlay={() => setIsLoading(false)}
+          onLoadedMetadata={() => {
+            // Seek to 1 second for better thumbnail, but only if not in sequence
+            if (!isSequenceActive && !hasInteracted && videoRef.current) {
+              videoRef.current.currentTime = 1;
+            }
+          }}
           onError={() => {
             setIsLoading(false);
             console.error('Video failed to load:', src);
+            // Move to next video if this one fails during sequence
+            if (isSequenceActive && currentVideoIndex === videoIndex) {
+              setTimeout(nextVideo, 1000);
+            }
           }}
         />
       )}
@@ -161,7 +206,9 @@ export function VideoThumbnail({
       <div className="absolute inset-0 flex items-center justify-center z-10">
         <div className={`bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm transition-all duration-300 ${playButtonSize} ${
           isLoading ? 'animate-pulse' : (isMobile() ? '' : 'group-hover:bg-white/30')
-        } ${isPlaying && !isLoading ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'}`}>
+        } ${isPlaying && !isLoading && !shouldAutoPlay ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'} ${
+          shouldAutoPlay ? 'ring-2 ring-cyan-400 ring-opacity-60' : ''
+        }`}>
           {isLoading ? (
             <div className="w-6 h-6 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
           ) : isPlaying ? (
@@ -179,6 +226,15 @@ export function VideoThumbnail({
           )}
         </div>
       </div>
+
+      {/* Sequence indicator */}
+      {shouldAutoPlay && (
+        <div className="absolute top-2 left-2 z-30">
+          <div className="bg-cyan-400 text-black px-2 py-1 rounded-full text-xs font-bosenAlt animate-pulse">
+            NOW PLAYING
+          </div>
+        </div>
+      )}
 
       {/* Hover overlay */}
       {!isFullscreen && (
@@ -208,7 +264,7 @@ export function VideoThumbnail({
       <div className={`absolute transition-all duration-300 z-20 ${
         isFullscreen 
           ? 'bottom-8 left-8 opacity-100' 
-          : 'bottom-4 left-4 opacity-0 group-hover:opacity-100'
+          : `bottom-4 left-4 ${shouldAutoPlay ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`
       }`}>
         <span className={`text-white font-bosenAlt bg-black/50 px-3 py-1 rounded-full ${
           isFullscreen ? 'text-lg' : 'text-sm'
@@ -219,5 +275,8 @@ export function VideoThumbnail({
     </div>
   );
 }
+
+// Export the total number of videos for the sequence manager
+export const TOTAL_VIDEOS = 22; // 1 showreel + 9 featured + 12 social
 
 export default VideoThumbnail;
